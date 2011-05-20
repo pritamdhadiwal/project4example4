@@ -1,0 +1,6 @@
+id	tax	name	adresse	city	state	zip	phone
+5	2	name5	adresse5	Paris	Paris	75001	0606060606
+6	2	name6	adresse6	Paris	Paris	75001	0606060606
+7	2	name7	adresse7	Paris	Paris	75001	0606060606
+8	2	name8	adresse8	Paris	Paris	75001	0606060606
+9	2	name9	adresse9	Paris	Paris	75001	0606060606

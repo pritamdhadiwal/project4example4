@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:integration="http://www.springframework.org/schema/integration"
+	xmlns:file="http://www.springframework.org/schema/integration/file"
+	xmlns:jdbc="http://www.springframework.org/schema/integration/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
+			http://www.springframework.org/schema/integration/file
+			http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+			http://www.springframework.org/schema/integration/jdbc
+			http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+	<file:inbound-channel-adapter id="filesIn"
+		directory="${customer.file.input.path}">
+		<integration:poller id="poller" fixed-delay="5000"/>
+	</file:inbound-channel-adapter>
+
+	<integration:service-activator
+		input-channel="filesIn" ref="handler" output-channel="channel1" />
+
+	<bean id="handler" class="com.mycompany.integration.Handler" />
+	
+	<integration:channel id="channel1"></integration:channel>
+	
+	<integration:splitter input-channel="channel2" expression="payload" output-channel="dbChannel"/>
+	
+	<integration:channel id="channel2"></integration:channel>
+	
+		<integration:transformer output-channel="channel2" input-channel="channel1">
+		<bean class="com.mycompany.integration.FileTransformer" />
+	</integration:transformer>
+	
+	
+	<integration:channel id="dbChannel"></integration:channel>
+
+	
+	
+	<jdbc:outbound-channel-adapter
+		query="insert into customer (customer_id, tax_id, name, adresse, city, state, zip, phone) values
+		(:payload.customerId, :payload.taxId, :payload.name, :payload.adresse, :payload.city, :payload.state, :payload.city, :payload.phone)"
+		channel="dbChannel" data-source="dataSource" />
+		
+		
+		
+	
+	
+	
+</beans>
